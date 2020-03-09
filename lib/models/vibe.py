@@ -24,63 +24,62 @@ from lib.models.attention import SelfAttention
 
 
 class TemporalEncoder(nn.Module):
-    def __init__(
-            self,
-            n_layers=1,
-            hidden_size=2048,
-            add_linear=False,
-            bidirectional=False,
-            use_residual=True
-    ):
+    def __init__(self,
+                 n_layers=1,
+                 hidden_size=2048,
+                 add_linear=False,
+                 bidirectional=False,
+                 use_residual=True):
         super(TemporalEncoder, self).__init__()
 
-        self.gru = nn.GRU(
-            input_size=2048,
-            hidden_size=hidden_size,
-            bidirectional=bidirectional,
-            num_layers=n_layers
-        )
+        self.gru = nn.GRU(input_size=2048,
+                          hidden_size=hidden_size,
+                          bidirectional=bidirectional,
+                          num_layers=n_layers)
 
         self.linear = None
         if bidirectional:
-            self.linear = nn.Linear(hidden_size*2, 2048)
+            self.linear = nn.Linear(hidden_size * 2, 2048)
         elif add_linear:
             self.linear = nn.Linear(hidden_size, 2048)
         self.use_residual = use_residual
 
     def forward(self, x):
-        n,t,f = x.shape
-        x = x.permute(1,0,2) # NTF -> TNF
+        n, t, f = x.shape
+        x = x.permute(1, 0, 2)  # NTF -> TNF
         y, _ = self.gru(x)
         if self.linear:
             y = F.relu(y)
             y = self.linear(y.view(-1, y.size(-1)))
-            y = y.view(t,n,f)
+            y = y.view(t, n, f)
         if self.use_residual and y.shape[-1] == 2048:
             y = y + x
-        y = y.permute(1,0,2) # TNF -> NTF
+        y = y.permute(1, 0, 2)  # TNF -> NTF
         return y
 
 
 class TemporalEncoderWAttention(nn.Module):
     def __init__(
-            self,
-            n_layers=1,
-            hidden_size=2048,
-            add_linear=False,
-            bidirectional=False,
-            attention_size=1024,
-            attention_layers=1,
-            attention_dropout=0.5,
-            use_residual=True,
+        self,
+        n_layers=1,
+        hidden_size=2048,
+        add_linear=False,
+        bidirectional=False,
+        attention_size=1024,
+        attention_layers=1,
+        attention_dropout=0.5,
+        use_residual=True,
     ):
         super(TemporalEncoderWAttention, self).__init__()
 
-        self.gru = nn.GRU(input_size=2048, hidden_size=hidden_size, bidirectional=bidirectional, num_layers=n_layers)
+        self.gru = nn.GRU(input_size=2048,
+                          hidden_size=hidden_size,
+                          bidirectional=bidirectional,
+                          num_layers=n_layers)
         self.linear = None
         if bidirectional:
-            self.linear = nn.Linear(hidden_size*2, 2048)
-            self.attention = SelfAttention(attention_size*2,
+            self.linear = nn.Linear(hidden_size * 2, 2048)
+            self.attention = SelfAttention(attention_size * 2,
                                            layers=attention_layers,
                                            dropout=attention_dropout)
 
@@ -91,10 +90,9 @@ class TemporalEncoderWAttention(nn.Module):
                                        layers=attention_layers,
                                        dropout=attention_dropout)
 
-
     def forward(self, x):
-        n,t,f = x.shape
-        x = x.permute(1,0,2) # NTF -> TNF
+        n, t, f = x.shape
+        x = x.permute(1, 0, 2)  # NTF -> TNF
         outputs, _ = self.gru(x)
         outputs = outputs.permute(1, 0, 2)
         y, attentions = self.attention(outputs)
@@ -102,29 +100,27 @@ class TemporalEncoderWAttention(nn.Module):
         if self.linear:
 
             y = self.linear(y.reshape(-1, y.size(-1)))
-            y = y.view(t,n,f)
+            y = y.view(t, n, f)
         if self.use_residual and y.shape[-1] == 2048:
             y = y + x
-        y = y.permute(1,0,2) # TNF -> NTF
+        y = y.permute(1, 0, 2)  # TNF -> NTF
         return y
 
 
 class VIBE(nn.Module):
-    def __init__(
-            self,
-            seqlen,
-            batch_size=64,
-            n_layers=1,
-            hidden_size=2048,
-            pretrained='data/vibe_data/spin_model_checkpoint.pth.tar',
-            add_linear=False,
-            bidirectional=False,
-            attention=False,
-            attention_cfg=None,
-            use_residual=True,
-            use_6d=True,
-            disable_temporal=False
-    ):
+    def __init__(self,
+                 seqlen,
+                 batch_size=64,
+                 n_layers=1,
+                 hidden_size=2048,
+                 pretrained='data/vibe_data/spin_model_checkpoint.pth.tar',
+                 add_linear=False,
+                 bidirectional=False,
+                 attention=False,
+                 attention_cfg=None,
+                 use_residual=True,
+                 use_6d=True,
+                 disable_temporal=False):
 
         super(VIBE, self).__init__()
 
@@ -156,7 +152,8 @@ class VIBE(nn.Module):
         self.regressor = Regressor(use_6d=use_6d)
 
         if pretrained and os.path.isfile(pretrained):
-            pretrained_dict = torch.load(pretrained)['model']
+            pretrained_dict = torch.load(
+                pretrained, map_location=torch.device('cpu'))['model']
 
             if not use_6d:
                 del pretrained_dict['decpose.weight']
@@ -166,7 +163,6 @@ class VIBE(nn.Module):
 
             self.regressor.load_state_dict(pretrained_dict, strict=False)
             print(f'=> loaded pretrained model from \'{pretrained}\'')
-
 
     def forward(self, input, J_regressor=None):
         # input size NTF
@@ -178,7 +174,6 @@ class VIBE(nn.Module):
             feature = self.encoder(input)
             feature = feature.reshape(-1, feature.size(-1))
 
-
         smpl_output = self.regressor(feature, J_regressor=J_regressor)
         for s in smpl_output:
             s['theta'] = s['theta'].reshape(batch_size, seqlen, -1)
@@ -189,22 +184,21 @@ class VIBE(nn.Module):
 
         return smpl_output
 
+
 class VIBE_Demo(nn.Module):
-    def __init__(
-            self,
-            seqlen,
-            batch_size=64,
-            n_layers=1,
-            hidden_size=2048,
-            pretrained='data/vibe_data/spin_model_checkpoint.pth.tar',
-            add_linear=False,
-            bidirectional=False,
-            attention=False,
-            attention_cfg=None,
-            use_residual=True,
-            use_6d=True,
-            disable_temporal=False
-    ):
+    def __init__(self,
+                 seqlen,
+                 batch_size=64,
+                 n_layers=1,
+                 hidden_size=2048,
+                 pretrained='data/vibe_data/spin_model_checkpoint.pth.tar',
+                 add_linear=False,
+                 bidirectional=False,
+                 attention=False,
+                 attention_cfg=None,
+                 use_residual=True,
+                 use_6d=True,
+                 disable_temporal=False):
 
         super(VIBE_Demo, self).__init__()
 
@@ -233,14 +227,15 @@ class VIBE_Demo(nn.Module):
             )
 
         self.hmr = hmr()
-        checkpoint = torch.load(pretrained)
+        checkpoint = torch.load(pretrained, map_location=torch.device('cpu'))
         self.hmr.load_state_dict(checkpoint['model'], strict=False)
 
         # regressor can predict cam, pose and shape params in an iterative way
         self.regressor = Regressor(use_6d=use_6d)
 
         if pretrained and os.path.isfile(pretrained):
-            pretrained_dict = torch.load(pretrained)['model']
+            pretrained_dict = torch.load(
+                pretrained, map_location=torch.device('cpu'))['model']
 
             if not use_6d:
                 del pretrained_dict['decpose.weight']
@@ -250,7 +245,6 @@ class VIBE_Demo(nn.Module):
 
             self.regressor.load_state_dict(pretrained_dict, strict=False)
             print(f'=> loaded pretrained model from \'{pretrained}\'')
-
 
     def forward(self, input, J_regressor=None):
         # input size NTF
@@ -262,7 +256,6 @@ class VIBE_Demo(nn.Module):
             feature = feature.reshape(batch_size, seqlen, -1)
             feature = self.encoder(feature)
             feature = feature.reshape(-1, feature.size(-1))
-
 
         smpl_output = self.regressor(feature, J_regressor=J_regressor)
 

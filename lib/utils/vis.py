@@ -74,7 +74,14 @@ def get_colors():
     return colors
 
 
-def render_image(img, verts, cam, faces=None, angle=None, axis=None, resolution=224, output_fn=None):
+def render_image(img,
+                 verts,
+                 cam,
+                 faces=None,
+                 angle=None,
+                 axis=None,
+                 resolution=224,
+                 output_fn=None):
     if faces is None:
         faces = get_smpl_faces()
 
@@ -89,7 +96,8 @@ def render_image(img, verts, cam, faces=None, angle=None, axis=None, resolution=
 
     if output_fn:
         mesh.export(output_fn)
-        camera_translation = np.array([-cam[1], cam[2], 2 * 5000. / (img.shape[0] * cam[0] + 1e-9)])
+        camera_translation = np.array(
+            [-cam[1], cam[2], 2 * 5000. / (img.shape[0] * cam[0] + 1e-9)])
         np.save(output_fn.replace('.obj', '.npy'), camera_translation)
 
         # Save the rotated mesh
@@ -98,27 +106,21 @@ def render_image(img, verts, cam, faces=None, angle=None, axis=None, resolution=
         # rotated_mesh.apply_transform(R)
         # rotated_mesh.export(output_fn.replace('.obj', '_rot.obj'))
 
-
-
     scene = pyrender.Scene(bg_color=[0.0, 0.0, 0.0, 0.0],
-                           ambient_light=(0.3, 0.3, 0.3)
-                           )
+                           ambient_light=(0.3, 0.3, 0.3))
 
-    material = pyrender.MetallicRoughnessMaterial(
-        metallicFactor=0.0,
-        alphaMode='OPAQUE',
-        baseColorFactor=(1.0, 1.0, 0.9, 1.0)
-    )
+    material = pyrender.MetallicRoughnessMaterial(metallicFactor=0.0,
+                                                  alphaMode='OPAQUE',
+                                                  baseColorFactor=(1.0, 1.0,
+                                                                   0.9, 1.0))
     mesh = pyrender.Mesh.from_trimesh(mesh, material=material)
     scene.add(mesh, 'mesh')
 
     camera_pose = np.eye(4)
 
-    camera = WeakPerspectiveCamera(
-        scale=cam[0],
-        translation=cam[1:],
-        zfar=1000.
-    )
+    camera = WeakPerspectiveCamera(scale=cam[0],
+                                   translation=cam[1:],
+                                   zfar=1000.)
     scene.add(camera, pose=camera_pose)
 
     light = pyrender.PointLight(color=[1.0, 1.0, 1.0], intensity=1)
@@ -133,7 +135,6 @@ def render_image(img, verts, cam, faces=None, angle=None, axis=None, resolution=
     light_pose[:3, 3] = [1, 1, 2]
     scene.add(light, pose=light_pose)
 
-
     r = pyrender.OffscreenRenderer(viewport_width=resolution,
                                    viewport_height=resolution,
                                    point_size=1.0)
@@ -146,7 +147,7 @@ def render_image(img, verts, cam, faces=None, angle=None, axis=None, resolution=
 
     image = output_img.astype(np.uint8)
     text = f's: {cam[0]:.2f}, tx: {cam[1]:.2f}, ty: {cam[2]:.2f}'
-    cv2.putText(image, text, (5, 10), 0, 0.4, color=(0,255,0))
+    cv2.putText(image, text, (5, 10), 0, 0.4, color=(0, 255, 0))
 
     return image
 
@@ -161,7 +162,10 @@ def draw_SMPL_joints2D(joints2D, image, kintree_table=None, color='red'):
 
         color = lcolor if i % 2 == 0 else rcolor
 
-        pt1, pt2 = (joints2D[j1, 0], joints2D[j1, 1]), (joints2D[j2, 0], joints2D[j2, 1])
+        pt1, pt2 = (joints2D[j1, 0], joints2D[j1,
+                                              1]), (joints2D[j2,
+                                                             0], joints2D[j2,
+                                                                          1])
         cv2.line(image, pt1=pt1, pt2=pt2, color=color, thickness=2)
 
         cv2.circle(image, pt1, 4, color, -1)
@@ -178,13 +182,13 @@ def draw_SMPL_joints2D(joints2D, image, kintree_table=None, color='red'):
 def show3Dpose(channels, ax, radius=40, lcolor='#ff0000', rcolor='#0000ff'):
     vals = channels
 
-    connections = [[0, 1], [1, 2], [2, 3], [0, 4], [4, 5],
-                   [5, 6], [0, 7], [7, 8], [8, 9], [9, 10],
-                   [8, 11], [11, 12], [12, 13], [8, 14], [14, 15], [15, 16]]
+    connections = [[0, 1], [1, 2], [2, 3], [0, 4], [4, 5], [5, 6], [0, 7],
+                   [7, 8], [8, 9], [9, 10], [8, 11], [11, 12], [12, 13],
+                   [8, 14], [14, 15], [15, 16]]
 
     LR = np.array([0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0], dtype=bool)
 
-    for ind, (i,j) in enumerate(connections):
+    for ind, (i, j) in enumerate(connections):
         x, y, z = [np.array([vals[i, c], vals[j, c]]) for c in range(3)]
         ax.plot(x, y, z, lw=2, c=lcolor if LR[ind] else rcolor)
 
@@ -204,7 +208,6 @@ def visualize_sequence(sequence):
     seqlen, size = sequence.shape
     sequence = sequence.reshape((seqlen, -1, 3))
 
-
     fig = plt.figure(figsize=(12, 7))
 
     for i in range(seqlen):
@@ -218,7 +221,14 @@ def visualize_sequence(sequence):
 
     plt.close()
 
-def visualize_preds(image, preds, target=None, target_exists=True, dataset='common', vis_hmr=False, use_spin=False):
+
+def visualize_preds(image,
+                    preds,
+                    target=None,
+                    target_exists=True,
+                    dataset='common',
+                    vis_hmr=False,
+                    use_spin=False):
     with torch.no_grad():
         if isinstance(image, torch.Tensor):
             image = torch2numpy(image)
@@ -226,17 +236,18 @@ def visualize_preds(image, preds, target=None, target_exists=True, dataset='comm
             # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             # cv2.imwrite(f'sample_images/{random.randint(0,100)}.jpg', image)
 
-    pred_theta  = preds['theta']
+    pred_theta = preds['theta']
     pred_camera = pred_theta[:3]
     # pred_pose   = pred_theta[3:75]
     # pred_shape  = pred_theta[75:]
-    pred_kp_2d  = preds['kp_2d']
+    pred_kp_2d = preds['kp_2d']
     pred_verts = preds['verts']
 
     if target_exists:
-        target_kp_2d  = target['kp_2d']
+        target_kp_2d = target['kp_2d']
 
-    pred_kp_2d = np.concatenate([pred_kp_2d, np.ones((pred_kp_2d.shape[0], 1))], axis=-1)
+    pred_kp_2d = np.concatenate(
+        [pred_kp_2d, np.ones((pred_kp_2d.shape[0], 1))], axis=-1)
 
     faces = get_smpl_faces()
 
@@ -246,43 +257,45 @@ def visualize_preds(image, preds, target=None, target_exists=True, dataset='comm
             target_verts = target['verts']
             target_cam = target['cam']
 
-            target_image = render_image(
-                img=image.copy(),
-                verts=target_verts,
-                faces=faces,
-                cam=target_cam
-            )
+            target_image = render_image(img=image.copy(),
+                                        verts=target_verts,
+                                        faces=faces,
+                                        cam=target_cam)
         else:
-            target_image = draw_skeleton(image.copy(), target_kp_2d, dataset=dataset)
+            target_image = draw_skeleton(image.copy(),
+                                         target_kp_2d,
+                                         dataset=dataset)
 
-
-    render = render_image(
-        img=image.copy(),
-        verts=pred_verts,
-        faces=faces,
-        cam=pred_camera
-    )
+    render = render_image(img=image.copy(),
+                          verts=pred_verts,
+                          faces=faces,
+                          cam=pred_camera)
 
     white_img = np.zeros_like(image)
-    render_side = render_image(
-        img=white_img.copy(),
-        verts=pred_verts,
-        faces=faces,
-        cam=pred_camera,
-        angle=90,
-        axis=[0,1,0]
-    )
+    render_side = render_image(img=white_img.copy(),
+                               verts=pred_verts,
+                               faces=faces,
+                               cam=pred_camera,
+                               angle=90,
+                               axis=[0, 1, 0])
 
     if target_exists:
-        result_image = np.hstack([image, pred_image, target_image, render, render_side])
+        result_image = np.hstack(
+            [image, pred_image, target_image, render, render_side])
     else:
         result_image = np.hstack([image, pred_image, render, render_side])
 
     return result_image
 
 
-def batch_visualize_preds(images, preds, target=None, max_images=16, idxs=None,
-                          target_exists=True, dataset='common', use_spin=False):
+def batch_visualize_preds(images,
+                          preds,
+                          target=None,
+                          max_images=16,
+                          idxs=None,
+                          target_exists=True,
+                          dataset='common',
+                          use_spin=False):
 
     if max_images is None or images.shape[0] < max_images:
         max_images = images.shape[0]
@@ -314,8 +327,12 @@ def batch_visualize_preds(images, preds, target=None, max_images=16, idxs=None,
         else:
             single_target = None
 
-        img = visualize_preds(images[idx], single_pred, single_target, target_exists,
-                              dataset=dataset, use_spin=use_spin)
+        img = visualize_preds(images[idx],
+                              single_pred,
+                              single_target,
+                              target_exists,
+                              dataset=dataset,
+                              use_spin=use_spin)
         result_images.append(img)
 
     result_image = np.vstack(result_images)
@@ -323,10 +340,16 @@ def batch_visualize_preds(images, preds, target=None, max_images=16, idxs=None,
     return result_image
 
 
-def batch_visualize_vid_preds(video, preds, target, max_video=4, vis_hmr=False, dataset='common', use_spin=False):
+def batch_visualize_vid_preds(video,
+                              preds,
+                              target,
+                              max_video=4,
+                              vis_hmr=False,
+                              dataset='common',
+                              use_spin=False):
     with torch.no_grad():
         if isinstance(video, torch.Tensor):
-            video = torch_vid2numpy(video) # NTCHW
+            video = torch_vid2numpy(video)  # NTCHW
 
     video = np.transpose(video, (0, 1, 3, 4, 2))[:max_video]  # NTCHW->NTHWC
 
@@ -347,11 +370,11 @@ def batch_visualize_vid_preds(video, preds, target, max_video=4, vis_hmr=False, 
             if isinstance(target[k], torch.Tensor):
                 target[k] = v.cpu().numpy()[:max_video]
 
-    batch_videos = [] # NTCHW*4
+    batch_videos = []  # NTCHW*4
 
     for batch_id in range(batch_size):
 
-        result_video = [] #TCHW*4
+        result_video = []  #TCHW*4
 
         for t_id in range(tsize):
             image = video[batch_id, t_id]
@@ -363,8 +386,12 @@ def batch_visualize_vid_preds(video, preds, target, max_video=4, vis_hmr=False, 
             for k, v in target.items():
                 single_target[k] = v[batch_id, t_id]
 
-            img = visualize_preds(image, single_pred, single_target,
-                                  vis_hmr=vis_hmr, dataset=dataset, use_spin=use_spin)
+            img = visualize_preds(image,
+                                  single_pred,
+                                  single_target,
+                                  vis_hmr=vis_hmr,
+                                  dataset=dataset,
+                                  use_spin=use_spin)
 
             result_video.append(img[np.newaxis, ...])
 
@@ -377,12 +404,16 @@ def batch_visualize_vid_preds(video, preds, target, max_video=4, vis_hmr=False, 
     return final_video
 
 
-def draw_skeleton(image, kp_2d, dataset='common', unnormalize=True, thickness=2):
+def draw_skeleton(image,
+                  kp_2d,
+                  dataset='common',
+                  unnormalize=True,
+                  thickness=2):
 
     if unnormalize:
-        kp_2d[:,:2] = normalize_2d_kp(kp_2d[:,:2], 224, inv=True)
+        kp_2d[:, :2] = normalize_2d_kp(kp_2d[:, :2], 224, inv=True)
 
-    kp_2d[:,2] = kp_2d[:,2] > 0.3
+    kp_2d[:, 2] = kp_2d[:, 2] > 0.3
     kp_2d = np.array(kp_2d, dtype=int)
 
     rcolor = get_colors()['red'].tolist()
@@ -390,19 +421,20 @@ def draw_skeleton(image, kp_2d, dataset='common', unnormalize=True, thickness=2)
     lcolor = get_colors()['blue'].tolist()
 
     skeleton = eval(f'kp_utils.get_{dataset}_skeleton')()
-    common_lr = [0,0,1,1,0,0,0,0,1,0,0,1,1,1,0]
-    for idx,pt in enumerate(kp_2d):
-        if pt[2] > 0: # if visible
+    common_lr = [0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0]
+    for idx, pt in enumerate(kp_2d):
+        if pt[2] > 0:  # if visible
             cv2.circle(image, (pt[0], pt[1]), 4, pcolor, -1)
             # cv2.putText(image, f'{idx}', (pt[0]+1, pt[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0))
 
-    for i,(j1,j2) in enumerate(skeleton):
-        if kp_2d[j1, 2] > 0 and kp_2d[j2, 2] > 0: # if visible
+    for i, (j1, j2) in enumerate(skeleton):
+        if kp_2d[j1, 2] > 0 and kp_2d[j2, 2] > 0:  # if visible
             if dataset == 'common':
                 color = rcolor if common_lr[i] == 0 else lcolor
             else:
                 color = lcolor if i % 2 == 0 else rcolor
-            pt1, pt2 = (kp_2d[j1, 0], kp_2d[j1, 1]), (kp_2d[j2, 0], kp_2d[j2, 1])
+            pt1, pt2 = (kp_2d[j1, 0], kp_2d[j1, 1]), (kp_2d[j2, 0], kp_2d[j2,
+                                                                          1])
             cv2.line(image, pt1=pt1, pt2=pt2, color=color, thickness=thickness)
 
     return image
@@ -411,7 +443,6 @@ def draw_skeleton(image, kp_2d, dataset='common', unnormalize=True, thickness=2)
 def batch_draw_skeleton(images, target, max_images=8, dataset='common'):
     if max_images is None or images.shape[0] < max_images:
         max_images = images.shape[0]
-
 
     with torch.no_grad():
 
@@ -429,7 +460,9 @@ def batch_draw_skeleton(images, target, max_images=8, dataset='common'):
 
         img = torch2numpy(images[idx])
 
-        img = draw_skeleton(img.copy(), single_target['kp_2d'], dataset=dataset)
+        img = draw_skeleton(img.copy(),
+                            single_target['kp_2d'],
+                            dataset=dataset)
         result_images.append(img)
 
     result_image = np.vstack(result_images)
@@ -445,9 +478,10 @@ def get_regressor_output(features):
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    model = Regressor(batch_size=batch_size*seqlen).to(device)
+    model = Regressor(batch_size=batch_size * seqlen).to(device)
     smpl = SMPL_Layer(gender='coco').to(device)
-    pretrained = torch.load('models/model_best.pth.tar')['gen_state_dict']
+    pretrained = torch.load('models/model_best.pth.tar',
+                            map_location=torch.device('cpu'))['gen_state_dict']
 
     new_pretrained_dict = {}
     for k, v in pretrained.items():
@@ -458,7 +492,7 @@ def get_regressor_output(features):
                 del new_pretrained_dict[k[10:]]
 
     model.load_state_dict(new_pretrained_dict, strict=False)
-    features = features.reshape(batch_size*seqlen, -1)
+    features = features.reshape(batch_size * seqlen, -1)
     features = features.to(device)
     theta = model(features)[-1]
 
@@ -473,6 +507,7 @@ def get_regressor_output(features):
 
     return verts, cam
 
+
 def show_video(video, fps=25):
     for fid, frame in enumerate(video):
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
@@ -481,6 +516,6 @@ def show_video(video, fps=25):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-        time.sleep(1./fps)
+        time.sleep(1. / fps)
 
     cv2.destroyAllWindows()

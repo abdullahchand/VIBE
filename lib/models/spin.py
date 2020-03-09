@@ -15,43 +15,68 @@ from lib.utils.geometry import rotation_matrix_to_angle_axis
 
 # Map joints to SMPL joints
 JOINT_MAP = {
-'OP Nose': 24, 'OP Neck': 12, 'OP RShoulder': 17,
-'OP RElbow': 19, 'OP RWrist': 21, 'OP LShoulder': 16,
-'OP LElbow': 18, 'OP LWrist': 20, 'OP MidHip': 0,
-'OP RHip': 2, 'OP RKnee': 5, 'OP RAnkle': 8,
-'OP LHip': 1, 'OP LKnee': 4, 'OP LAnkle': 7,
-'OP REye': 25, 'OP LEye': 26, 'OP REar': 27,
-'OP LEar': 28, 'OP LBigToe': 29, 'OP LSmallToe': 30,
-'OP LHeel': 31, 'OP RBigToe': 32, 'OP RSmallToe': 33, 'OP RHeel': 34,
-'Right Ankle': 8, 'Right Knee': 5, 'Right Hip': 45,
-'Left Hip': 46, 'Left Knee': 4, 'Left Ankle': 7,
-'Right Wrist': 21, 'Right Elbow': 19, 'Right Shoulder': 17,
-'Left Shoulder': 16, 'Left Elbow': 18, 'Left Wrist': 20,
-'Neck (LSP)': 47, 'Top of Head (LSP)': 48,
-'Pelvis (MPII)': 49, 'Thorax (MPII)': 50,
-'Spine (H36M)': 51, 'Jaw (H36M)': 52,
-'Head (H36M)': 53, 'Nose': 24, 'Left Eye': 26,
-'Right Eye': 25, 'Left Ear': 28, 'Right Ear': 27
+    'OP Nose': 24,
+    'OP Neck': 12,
+    'OP RShoulder': 17,
+    'OP RElbow': 19,
+    'OP RWrist': 21,
+    'OP LShoulder': 16,
+    'OP LElbow': 18,
+    'OP LWrist': 20,
+    'OP MidHip': 0,
+    'OP RHip': 2,
+    'OP RKnee': 5,
+    'OP RAnkle': 8,
+    'OP LHip': 1,
+    'OP LKnee': 4,
+    'OP LAnkle': 7,
+    'OP REye': 25,
+    'OP LEye': 26,
+    'OP REar': 27,
+    'OP LEar': 28,
+    'OP LBigToe': 29,
+    'OP LSmallToe': 30,
+    'OP LHeel': 31,
+    'OP RBigToe': 32,
+    'OP RSmallToe': 33,
+    'OP RHeel': 34,
+    'Right Ankle': 8,
+    'Right Knee': 5,
+    'Right Hip': 45,
+    'Left Hip': 46,
+    'Left Knee': 4,
+    'Left Ankle': 7,
+    'Right Wrist': 21,
+    'Right Elbow': 19,
+    'Right Shoulder': 17,
+    'Left Shoulder': 16,
+    'Left Elbow': 18,
+    'Left Wrist': 20,
+    'Neck (LSP)': 47,
+    'Top of Head (LSP)': 48,
+    'Pelvis (MPII)': 49,
+    'Thorax (MPII)': 50,
+    'Spine (H36M)': 51,
+    'Jaw (H36M)': 52,
+    'Head (H36M)': 53,
+    'Nose': 24,
+    'Left Eye': 26,
+    'Right Eye': 25,
+    'Left Ear': 28,
+    'Right Ear': 27
 }
 
 JOINT_NAMES = [
-'OP Nose', 'OP Neck', 'OP RShoulder',
-'OP RElbow', 'OP RWrist', 'OP LShoulder',
-'OP LElbow', 'OP LWrist', 'OP MidHip',
-'OP RHip', 'OP RKnee', 'OP RAnkle',
-'OP LHip', 'OP LKnee', 'OP LAnkle',
-'OP REye', 'OP LEye', 'OP REar',
-'OP LEar', 'OP LBigToe', 'OP LSmallToe',
-'OP LHeel', 'OP RBigToe', 'OP RSmallToe', 'OP RHeel',
-'Right Ankle', 'Right Knee', 'Right Hip',
-'Left Hip', 'Left Knee', 'Left Ankle',
-'Right Wrist', 'Right Elbow', 'Right Shoulder',
-'Left Shoulder', 'Left Elbow', 'Left Wrist',
-'Neck (LSP)', 'Top of Head (LSP)',
-'Pelvis (MPII)', 'Thorax (MPII)',
-'Spine (H36M)', 'Jaw (H36M)',
-'Head (H36M)', 'Nose', 'Left Eye',
-'Right Eye', 'Left Ear', 'Right Ear'
+    'OP Nose', 'OP Neck', 'OP RShoulder', 'OP RElbow', 'OP RWrist',
+    'OP LShoulder', 'OP LElbow', 'OP LWrist', 'OP MidHip', 'OP RHip',
+    'OP RKnee', 'OP RAnkle', 'OP LHip', 'OP LKnee', 'OP LAnkle', 'OP REye',
+    'OP LEye', 'OP REar', 'OP LEar', 'OP LBigToe', 'OP LSmallToe', 'OP LHeel',
+    'OP RBigToe', 'OP RSmallToe', 'OP RHeel', 'Right Ankle', 'Right Knee',
+    'Right Hip', 'Left Hip', 'Left Knee', 'Left Ankle', 'Right Wrist',
+    'Right Elbow', 'Right Shoulder', 'Left Shoulder', 'Left Elbow',
+    'Left Wrist', 'Neck (LSP)', 'Top of Head (LSP)', 'Pelvis (MPII)',
+    'Thorax (MPII)', 'Spine (H36M)', 'Jaw (H36M)', 'Head (H36M)', 'Nose',
+    'Left Eye', 'Right Eye', 'Left Ear', 'Right Ear'
 ]
 
 # Dict containing the joints in numerical order
@@ -68,6 +93,7 @@ def get_smpl_faces():
     smpl = SMPL(SMPL_MODEL_DIR, batch_size=1, create_transl=False)
     return smpl.faces
 
+
 def rot6d_to_rotmat_spin(x):
     """Convert 6D rotation representation to 3x3 rotation matrix.
     Based on Zhou et al., "On the Continuity of Rotation Representations in Neural Networks", CVPR 2019
@@ -76,7 +102,7 @@ def rot6d_to_rotmat_spin(x):
     Output:
         (B,3,3) Batch of corresponding rotation matrices
     """
-    x = x.view(-1,3,2)
+    x = x.view(-1, 3, 2)
     a1 = x[:, :, 0]
     a2 = x[:, :, 1]
     b1 = F.normalize(a1)
@@ -89,8 +115,9 @@ def rot6d_to_rotmat_spin(x):
     b3 = torch.cross(b1, b2)
     return torch.stack((b1, b2, b3), dim=-1)
 
+
 def rot6d_to_rotmat(x):
-    x = x.view(-1,3,2)
+    x = x.view(-1, 3, 2)
 
     # Normalize the first vector
     b1 = F.normalize(x[:, :, 0], dim=1, eps=1e-6)
@@ -117,8 +144,12 @@ class Bottleneck(nn.Module):
         super(Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride,
-                               padding=1, bias=False)
+        self.conv2 = nn.Conv2d(planes,
+                               planes,
+                               kernel_size=3,
+                               stride=stride,
+                               padding=1,
+                               bias=False)
         self.bn2 = nn.BatchNorm2d(planes)
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
@@ -157,7 +188,11 @@ class HMR(nn.Module):
         self.inplanes = 64
         super(HMR, self).__init__()
         npose = 24 * 6
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
+        self.conv1 = nn.Conv2d(3,
+                               64,
+                               kernel_size=7,
+                               stride=2,
+                               padding=3,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
@@ -178,11 +213,8 @@ class HMR(nn.Module):
         nn.init.xavier_uniform_(self.decshape.weight, gain=0.01)
         nn.init.xavier_uniform_(self.deccam.weight, gain=0.01)
 
-        self.smpl = SMPL(
-            SMPL_MODEL_DIR,
-            batch_size=64,
-            create_transl=False
-        ).to('cpu')
+        self.smpl = SMPL(SMPL_MODEL_DIR, batch_size=64,
+                         create_transl=False).to('cpu')
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -194,7 +226,8 @@ class HMR(nn.Module):
 
         mean_params = np.load(smpl_mean_params)
         init_pose = torch.from_numpy(mean_params['pose'][:]).unsqueeze(0)
-        init_shape = torch.from_numpy(mean_params['shape'][:].astype('float32')).unsqueeze(0)
+        init_shape = torch.from_numpy(
+            mean_params['shape'][:].astype('float32')).unsqueeze(0)
         init_cam = torch.from_numpy(mean_params['cam']).unsqueeze(0)
         self.register_buffer('init_pose', init_pose)
         self.register_buffer('init_shape', init_shape)
@@ -204,8 +237,11 @@ class HMR(nn.Module):
         downsample = None
         if stride != 1 or self.inplanes != planes * block.expansion:
             downsample = nn.Sequential(
-                nn.Conv2d(self.inplanes, planes * block.expansion,
-                          kernel_size=1, stride=stride, bias=False),
+                nn.Conv2d(self.inplanes,
+                          planes * block.expansion,
+                          kernel_size=1,
+                          stride=stride,
+                          bias=False),
                 nn.BatchNorm2d(planes * block.expansion),
             )
 
@@ -233,7 +269,13 @@ class HMR(nn.Module):
         xf = xf.view(xf.size(0), -1)
         return xf
 
-    def forward(self, x, init_pose=None, init_shape=None, init_cam=None, n_iter=3, return_features=False):
+    def forward(self,
+                x,
+                init_pose=None,
+                init_shape=None,
+                init_cam=None,
+                n_iter=3,
+                return_features=False):
 
         batch_size = x.shape[0]
 
@@ -272,19 +314,19 @@ class HMR(nn.Module):
 
         pred_rotmat = rot6d_to_rotmat(pred_pose).view(batch_size, 24, 3, 3)
 
-        pred_output = self.smpl(
-            betas=pred_shape,
-            body_pose=pred_rotmat[:, 1:],
-            global_orient=pred_rotmat[:, 0].unsqueeze(1),
-            pose2rot=False
-        )
+        pred_output = self.smpl(betas=pred_shape,
+                                body_pose=pred_rotmat[:, 1:],
+                                global_orient=pred_rotmat[:, 0].unsqueeze(1),
+                                pose2rot=False)
 
         pred_vertices = pred_output.vertices
         pred_joints = pred_output.joints
 
         pred_keypoints_2d = projection(pred_joints, pred_cam)
 
-        pose = rotation_matrix_to_angle_axis(pred_rotmat.reshape(-1, 3, 3)).reshape(-1, 72)
+        pose = rotation_matrix_to_angle_axis(pred_rotmat.reshape(-1, 3,
+                                                                 3)).reshape(
+                                                                     -1, 72)
 
         output = [{
             'theta': torch.cat([pred_cam, pose, pred_shape], dim=1),
@@ -300,7 +342,9 @@ class HMR(nn.Module):
 
 
 class Regressor(nn.Module):
-    def __init__(self, use_6d=True, smpl_mean_params='data/vibe_data/smpl_mean_params.npz'):
+    def __init__(self,
+                 use_6d=True,
+                 smpl_mean_params='data/vibe_data/smpl_mean_params.npz'):
         super(Regressor, self).__init__()
 
         self.use_6d = use_6d
@@ -317,16 +361,13 @@ class Regressor(nn.Module):
         nn.init.xavier_uniform_(self.decshape.weight, gain=0.01)
         nn.init.xavier_uniform_(self.deccam.weight, gain=0.01)
 
-        self.smpl = SMPL(
-            SMPL_MODEL_DIR,
-            batch_size=64,
-            create_transl=False
-        )
+        self.smpl = SMPL(SMPL_MODEL_DIR, batch_size=64, create_transl=False)
 
         if use_6d:
             mean_params = np.load(smpl_mean_params)
             init_pose = torch.from_numpy(mean_params['pose'][:]).unsqueeze(0)
-            init_shape = torch.from_numpy(mean_params['shape'][:].astype('float32')).unsqueeze(0)
+            init_shape = torch.from_numpy(
+                mean_params['shape'][:].astype('float32')).unsqueeze(0)
             init_cam = torch.from_numpy(mean_params['cam']).unsqueeze(0)
             self.register_buffer('init_pose', init_pose)
             self.register_buffer('init_shape', init_shape)
@@ -334,16 +375,22 @@ class Regressor(nn.Module):
         else:
             from lib.models.hmr import load_mean_dict
             mean_params = load_mean_dict()
-            init_pose = torch.from_numpy(mean_params['pose'][:].astype('float32'))
-            init_shape = torch.from_numpy(mean_params['shape'][:].astype('float32'))
+            init_pose = torch.from_numpy(
+                mean_params['pose'][:].astype('float32'))
+            init_shape = torch.from_numpy(
+                mean_params['shape'][:].astype('float32'))
             init_cam = torch.from_numpy(mean_params['cam'].astype('float32'))
             self.register_buffer('init_pose', init_pose)
             self.register_buffer('init_shape', init_shape)
             self.register_buffer('init_cam', init_cam)
 
-
-
-    def forward(self, x, init_pose=None, init_shape=None, init_cam=None, n_iter=3, J_regressor=None):
+    def forward(self,
+                x,
+                init_pose=None,
+                init_shape=None,
+                init_cam=None,
+                n_iter=3,
+                J_regressor=None):
         batch_size = x.shape[0]
 
         if init_pose is None:
@@ -369,12 +416,11 @@ class Regressor(nn.Module):
         if self.use_6d:
             pred_rotmat = rot6d_to_rotmat(pred_pose).view(batch_size, 24, 3, 3)
 
-            pred_output = self.smpl(
-                betas=pred_shape,
-                body_pose=pred_rotmat[:, 1:],
-                global_orient=pred_rotmat[:, 0].unsqueeze(1),
-                pose2rot=False
-            )
+            pred_output = self.smpl(betas=pred_shape,
+                                    body_pose=pred_rotmat[:, 1:],
+                                    global_orient=pred_rotmat[:,
+                                                              0].unsqueeze(1),
+                                    pose2rot=False)
         else:
             pred_rotmat = pred_pose.view(batch_size, 72)
 
@@ -389,28 +435,32 @@ class Regressor(nn.Module):
         pred_joints = pred_output.joints
 
         if J_regressor is not None:
-            J_regressor_batch = J_regressor[None, :].expand(pred_vertices.shape[0], -1, -1).to(pred_vertices.device)
+            J_regressor_batch = J_regressor[None, :].expand(
+                pred_vertices.shape[0], -1, -1).to(pred_vertices.device)
             pred_joints = torch.matmul(J_regressor_batch, pred_vertices)
             pred_joints = pred_joints[:, H36M_TO_J14, :]
 
         pred_keypoints_2d = projection(pred_joints, pred_cam)
 
         if self.use_6d:
-            pose = rotation_matrix_to_angle_axis(pred_rotmat.reshape(-1, 3, 3)).reshape(-1, 72)
+            pose = rotation_matrix_to_angle_axis(pred_rotmat.reshape(
+                -1, 3, 3)).reshape(-1, 72)
         else:
             pose = pred_rotmat
 
         output = [{
-            'theta'  : torch.cat([pred_cam, pose, pred_shape], dim=1),
-            'verts'  : pred_vertices,
-            'kp_2d'  : pred_keypoints_2d,
-            'kp_3d'  : pred_joints,
-            'rotmat' : pred_rotmat
+            'theta': torch.cat([pred_cam, pose, pred_shape], dim=1),
+            'verts': pred_vertices,
+            'kp_2d': pred_keypoints_2d,
+            'kp_3d': pred_joints,
+            'rotmat': pred_rotmat
         }]
         return output
 
 
-def hmr(smpl_mean_params='data/vibe_data/smpl_mean_params.npz', pretrained=True, **kwargs):
+def hmr(smpl_mean_params='data/vibe_data/smpl_mean_params.npz',
+        pretrained=True,
+        **kwargs):
     """
     Constructs an HMR model with ResNet50 backbone.
     Args:
@@ -424,23 +474,27 @@ def hmr(smpl_mean_params='data/vibe_data/smpl_mean_params.npz', pretrained=True,
 
 
 def projection(pred_joints, pred_camera):
-    pred_cam_t = torch.stack([pred_camera[:, 1],
-                              pred_camera[:, 2],
-                              2 * 5000. / (224. * pred_camera[:, 0] + 1e-9)], dim=-1)
+    pred_cam_t = torch.stack([
+        pred_camera[:, 1], pred_camera[:, 2], 2 * 5000. /
+        (224. * pred_camera[:, 0] + 1e-9)
+    ],
+                             dim=-1)
     batch_size = pred_joints.shape[0]
     camera_center = torch.zeros(batch_size, 2)
-    pred_keypoints_2d = perspective_projection(pred_joints,
-                                               rotation=torch.eye(3).unsqueeze(0).expand(batch_size, -1, -1).to(pred_joints.device),
-                                               translation=pred_cam_t,
-                                               focal_length=5000.,
-                                               camera_center=camera_center)
+    pred_keypoints_2d = perspective_projection(
+        pred_joints,
+        rotation=torch.eye(3).unsqueeze(0).expand(batch_size, -1,
+                                                  -1).to(pred_joints.device),
+        translation=pred_cam_t,
+        focal_length=5000.,
+        camera_center=camera_center)
     # Normalize keypoints to [-1,1]
     pred_keypoints_2d = pred_keypoints_2d / (224. / 2.)
     return pred_keypoints_2d
 
 
-def perspective_projection(points, rotation, translation,
-                           focal_length, camera_center):
+def perspective_projection(points, rotation, translation, focal_length,
+                           camera_center):
     """
     This function computes the perspective projection of a set of points.
     Input:
@@ -452,17 +506,17 @@ def perspective_projection(points, rotation, translation,
     """
     batch_size = points.shape[0]
     K = torch.zeros([batch_size, 3, 3], device=points.device)
-    K[:,0,0] = focal_length
-    K[:,1,1] = focal_length
-    K[:,2,2] = 1.
-    K[:,:-1, -1] = camera_center
+    K[:, 0, 0] = focal_length
+    K[:, 1, 1] = focal_length
+    K[:, 2, 2] = 1.
+    K[:, :-1, -1] = camera_center
 
     # Transform points
     points = torch.einsum('bij,bkj->bki', rotation, points)
     points = points + translation.unsqueeze(1)
 
     # Apply perspective distortion
-    projected_points = points / points[:,:,-1].unsqueeze(-1)
+    projected_points = points / points[:, :, -1].unsqueeze(-1)
 
     # Apply camera intrinsics
     projected_points = torch.einsum('bij,bkj->bki', K, projected_points)
@@ -472,18 +526,20 @@ def perspective_projection(points, rotation, translation,
 
 class SMPL(_SMPL):
     """ Extension of the official SMPL implementation to support more joints """
-
     def __init__(self, *args, **kwargs):
         super(SMPL, self).__init__(*args, **kwargs)
         joints = [JOINT_MAP[i] for i in JOINT_NAMES]
         J_regressor_extra = np.load(JOINT_REGRESSOR_TRAIN_EXTRA)
-        self.register_buffer('J_regressor_extra', torch.tensor(J_regressor_extra, dtype=torch.float32))
+        self.register_buffer(
+            'J_regressor_extra',
+            torch.tensor(J_regressor_extra, dtype=torch.float32))
         self.joint_map = torch.tensor(joints, dtype=torch.long)
 
     def forward(self, *args, **kwargs):
         kwargs['get_skin'] = True
         smpl_output = super(SMPL, self).forward(*args, **kwargs)
-        extra_joints = vertices2joints(self.J_regressor_extra, smpl_output.vertices)
+        extra_joints = vertices2joints(self.J_regressor_extra,
+                                       smpl_output.vertices)
         joints = torch.cat([smpl_output.joints, extra_joints], dim=1)
         joints = joints[:, self.joint_map, :]
         output = ModelOutput(vertices=smpl_output.vertices,
@@ -498,7 +554,8 @@ class SMPL(_SMPL):
 def get_pretrained_hmr():
     device = 'cuda'
     model = hmr().to(device)
-    checkpoint = torch.load('data/vibe_data/spin_model_checkpoint.pth.tar')
+    checkpoint = torch.load('data/vibe_data/spin_model_checkpoint.pth.tar',
+                            map_location=torch.device('cpu'))
     model.load_state_dict(checkpoint['model'], strict=False)
     model.eval()
     return model

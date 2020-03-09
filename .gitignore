@@ -1,0 +1,8 @@
+data/
+output/
+.direnv/
+sample_video.mp4
+vibe_output.pkl
+.vscode/
+*.pyc
+.envrc.private

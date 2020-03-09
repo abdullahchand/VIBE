@@ -18,6 +18,8 @@ import math
 import trimesh
 import pyrender
 import numpy as np
+import cv2
+
 from pyrender.constants import RenderFlags
 from lib.models.spin import get_smpl_faces
 
@@ -48,7 +50,7 @@ class WeakPerspectiveCamera(pyrender.Camera):
 
 
 class Renderer():
-    def __init__(self, resolution=(224,224), orig_img=False, wireframe=False):
+    def __init__(self, resolution=(224, 224), orig_img=False, wireframe=False):
         self.resolution = resolution
 
         self.faces = get_smpl_faces()
@@ -57,11 +59,11 @@ class Renderer():
         self.renderer = pyrender.OffscreenRenderer(
             viewport_width=self.resolution[0],
             viewport_height=self.resolution[1],
-            point_size=1.0
-        )
+            point_size=1.0)
 
         # set the scene
-        self.scene = pyrender.Scene(bg_color=[0.0, 0.0, 0.0, 0.0], ambient_light=(0.3, 0.3, 0.3))
+        self.scene = pyrender.Scene(bg_color=[0.0, 0.0, 0.0, 0.0],
+                                    ambient_light=(0.3, 0.3, 0.3))
 
         light = pyrender.PointLight(color=[1.0, 1.0, 1.0], intensity=1)
 
@@ -75,33 +77,39 @@ class Renderer():
         light_pose[:3, 3] = [1, 1, 2]
         self.scene.add(light, pose=light_pose)
 
-    def render(self, img, verts, cam, angle=None, axis=None, mesh_filename=None, color=[1.0, 1.0, 0.9]):
+    def render(self,
+               img,
+               verts,
+               cam,
+               angle=None,
+               axis=None,
+               mesh_filename=None,
+               color=[1.0, 1.0, 0.9]):
 
         mesh = trimesh.Trimesh(vertices=verts, faces=self.faces)
 
-        Rx = trimesh.transformations.rotation_matrix(math.radians(180), [1, 0, 0])
+        Rx = trimesh.transformations.rotation_matrix(math.radians(180),
+                                                     [1, 0, 0])
         mesh.apply_transform(Rx)
 
         if mesh_filename is not None:
             mesh.export(mesh_filename)
 
         if angle and axis:
-            R = trimesh.transformations.rotation_matrix(math.radians(angle), axis)
+            R = trimesh.transformations.rotation_matrix(
+                math.radians(angle), axis)
             mesh.apply_transform(R)
 
         sx, sy, tx, ty = cam
 
-        camera = WeakPerspectiveCamera(
-            scale=[sx, sy],
-            translation=[tx, ty],
-            zfar=1000.
-        )
+        camera = WeakPerspectiveCamera(scale=[sx, sy],
+                                       translation=[tx, ty],
+                                       zfar=1000.)
 
         material = pyrender.MetallicRoughnessMaterial(
             metallicFactor=0.0,
             alphaMode='OPAQUE',
-            baseColorFactor=(color[0], color[1], color[2], 1.0)
-        )
+            baseColorFactor=(color[0], color[1], color[2], 1.0))
 
         mesh = pyrender.Mesh.from_trimesh(mesh, material=material)
 
@@ -117,7 +125,11 @@ class Renderer():
 
         rgb, _ = self.renderer.render(self.scene, flags=render_flags)
         valid_mask = (rgb[:, :, -1] > 0)[:, :, np.newaxis]
-        output_img = rgb[:, :, :-1] * valid_mask + (1 - valid_mask) * img
+        zeros_channel = np.zeros((img.shape[0], img.shape[1]), dtype=np.uint)
+        c1, c2 = cv2.split(img)
+        merged_img = cv2.merge((c1, c2, zeros_channel))
+        output_img = rgb[:, :, :-1] * valid_mask + (1 -
+                                                    valid_mask) * merged_img
         image = output_img.astype(np.uint8)
 
         self.scene.remove_node(mesh_node)
